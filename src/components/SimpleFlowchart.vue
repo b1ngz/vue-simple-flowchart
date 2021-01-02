@@ -18,9 +18,10 @@
       :key="`node${index}`"
       v-bind.sync="node"
       :options="nodeOptions"
-      @linkingStart="linkingStart(node.id)"
-      @linkingStop="linkingStop(node.id)"
+      @linkingStart="linkingStart"
+      @linkingStop="linkingStop"
       @nodeSelected="nodeSelected(node.id, $event)"
+      @nodeEdit="nodeEdit(node.id, $event)"
     />
   </div>
 </template>
@@ -93,10 +94,10 @@ export default {
         let x, y, cy, cx, ex, ey
         x = this.scene.centerX + fromNode.x
         y = this.scene.centerY + fromNode.y;
-        [cx, cy] = this.getPortPosition('bottom', x, y)
+        [cx, cy] = this.getPortPosition('bottom', x, y, fromNode)
         x = this.scene.centerX + toNode.x
         y = this.scene.centerY + toNode.y;
-        [ex, ey] = this.getPortPosition('top', x, y)
+        [ex, ey] = this.getPortPosition('top', x, y, toNode)
         return {
           start: [cx, cy],
           end: [ex, ey],
@@ -108,7 +109,7 @@ export default {
         const fromNode = this.findNodeWithID(this.draggingLink.from)
         x = this.scene.centerX + fromNode.x
         y = this.scene.centerY + fromNode.y;
-        [cx, cy] = this.getPortPosition('bottom', x, y)
+        [cx, cy] = this.getPortPosition('bottom', x, y, fromNode)
         // push temp dragging link, mouse cursor postion = link end postion
         lines.push({
           start: [cx, cy],
@@ -121,7 +122,6 @@ export default {
   mounted() {
     this.rootDivOffset.top = this.$el ? this.$el.offsetTop : 0
     this.rootDivOffset.left = this.$el ? this.$el.offsetLeft : 0
-    // console.log(22222, this.rootDivOffset);
   },
   methods: {
     findNodeWithID(id) {
@@ -129,22 +129,30 @@ export default {
         return id === item.id
       })
     },
-    getPortPosition(type, x, y) {
+    getPortPosition(type, x, y, node) {
       if (type === 'top') {
-        return [x + 40, y]
+        return [x + node.width / 2, y]
       } else if (type === 'bottom') {
-        return [x + 40, y + 80]
+        return [x + node.width / 2, y + node.height]
       }
     },
-    linkingStart(index) {
+    linkingStart(index, bottomPort) {
       this.action.linking = true
+      const flowRect = this.$el.getBoundingClientRect()
+      const node = this.findNodeWithID(index)
+      node.width = (bottomPort.x - flowRect.x - (this.scene.centerX + node.x)) * 2 + bottomPort.width
+      node.height = bottomPort.y - flowRect.y - (this.scene.centerY + node.y)
+
       this.draggingLink = {
         from: index,
         mx: 0,
         my: 0
       }
     },
-    linkingStop(index) {
+    linkingStop(index, topPort) {
+      const flowRect = this.$el.getBoundingClientRect()
+      const node = this.findNodeWithID(index)
+      node.width = (topPort.x - flowRect.x - (this.scene.centerX + node.x)) * 2 + topPort.width
       // add new Link
       if (this.draggingLink && this.draggingLink.from !== index) {
         // check link existence
@@ -183,6 +191,9 @@ export default {
       this.$emit('nodeClick', id)
       this.mouse.lastX = e.pageX || e.clientX + document.documentElement.scrollLeft
       this.mouse.lastY = e.pageY || e.clientY + document.documentElement.scrollTop
+    },
+    nodeEdit(id, e) {
+      this.$emit('nodeEdit', id)
     },
     handleMove(e) {
       if (this.action.linking) {
