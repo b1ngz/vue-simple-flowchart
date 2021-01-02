@@ -1,20 +1,25 @@
 <template>
-  <div class="flowchart-node" :style="nodeStyle" 
+  <div
+    class="flowchart-node"
+    :style="nodeStyle"
+    :class="{selected: options.selected === id}"
     @mousedown="handleMousedown"
     @mouseover="handleMouseOver"
     @mouseleave="handleMouseLeave"
-    v-bind:class="{selected: options.selected === id}">
-    <div class="node-port node-input"
-       @mousedown="inputMouseDown"
-       @mouseup="inputMouseUp">
-    </div>
+  >
+    <div
+      class="node-port node-input"
+      @mousedown="inputMouseDown"
+      @mouseup="inputMouseUp"
+    />
     <div class="node-main">
-      <div v-text="type" class="node-type"></div>
-      <div v-text="label" class="node-label"></div>
+      <div class="node-type" v-text="type" />
+      <div class="node-label" v-text="label" />
     </div>
-    <div class="node-port node-output" 
-      @mousedown="outputMouseDown">
-    </div>
+    <div
+      class="node-port node-output"
+      @mousedown="outputMouseDown"
+    />
     <div v-show="show.delete" class="node-delete">&times;</div>
   </div>
 </template>
@@ -36,7 +41,7 @@ export default {
       validator(val) {
         return typeof val === 'number'
       }
-    },    
+    },
     y: {
       type: Number,
       default: 0,
@@ -58,7 +63,7 @@ export default {
         return {
           centerX: 1024,
           scale: 1,
-          centerY: 140,
+          centerY: 140
         }
       }
     }
@@ -66,47 +71,47 @@ export default {
   data() {
     return {
       show: {
-        delete: false,
+        delete: false
+      }
+    }
+  },
+  computed: {
+    nodeStyle() {
+      return {
+        top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop +
+        left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft +
+        transform: `scale(${this.options.scale})`
       }
     }
   },
   mounted() {
   },
-  computed: {
-    nodeStyle() {
-      return {
-        top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop + 
-        left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft + 
-        transform: `scale(${this.options.scale})`,
-      }
-    }
-  },
   methods: {
     handleMousedown(e) {
-      const target = e.target || e.srcElement;
+      const target = e.target || e.srcElement
       // console.log(target);
       if (target.className.indexOf('node-input') < 0 && target.className.indexOf('node-output') < 0) {
-        this.$emit('nodeSelected', e);
+        this.$emit('nodeSelected', e)
       }
-      e.preventDefault();
+      e.preventDefault()
     },
     handleMouseOver() {
-      this.show.delete = true;
+      this.show.delete = true
     },
     handleMouseLeave() {
-      this.show.delete = false;
+      this.show.delete = false
     },
     outputMouseDown(e) {
       this.$emit('linkingStart')
-      e.preventDefault();
+      e.preventDefault()
     },
     inputMouseDown(e) {
-      e.preventDefault();
+      e.preventDefault()
     },
     inputMouseUp(e) {
       this.$emit('linkingStop')
-      e.preventDefault();
-    },
+      e.preventDefault()
+    }
   }
 }
 </script>

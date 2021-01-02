@@ -3,19 +3,21 @@
     <h1> simple flowchart</h1>
     <div class="tool-wrapper">
       <select v-model="newNodeType">
-        <option v-for="(item, index) in nodeCategory" :key="index" :value="index">{{item}}</option>
+        <option v-for="(item, index) in nodeCategory" :key="index" :value="index">{{ item }}</option>
       </select>
-      <input type="text" v-model="newNodeLabel" placeholder="Input node label">
+      <input v-model="newNodeLabel" type="text" placeholder="Input node label">
       <button @click="addNode">ADD</button>
     </div>
-    
-    <simple-flowchart :scene.sync="scene" 
+
+    <simple-flowchart
+      :scene.sync="scene"
+      :height="800"
       @nodeClick="nodeClick"
       @nodeDelete="nodeDelete"
       @linkBreak="linkBreak"
       @linkAdded="linkAdded"
       @canvasClick="canvasClick"
-      :height="800"/>
+    />
   </div>
 </template>
 
@@ -23,7 +25,7 @@
 import SimpleFlowchart from './components/SimpleFlowchart.vue'
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     SimpleFlowchart
   },
@@ -39,41 +41,41 @@ export default {
             x: -700,
             y: -69,
             type: 'Action',
-            label: 'test1',
+            label: 'test1'
           },
           {
             id: 4,
             x: -357,
             y: 80,
             type: 'Script',
-            label: 'test2',
+            label: 'test2'
           },
           {
             id: 6,
             x: -557,
             y: 80,
             type: 'Rule',
-            label: 'test3',
+            label: 'test3'
           }
         ],
         links: [
           {
             id: 3,
             from: 2, // node id the link start
-            to: 4,  // node id the link end
+            to: 4 // node id the link end
           }
         ]
       },
       newNodeType: 0,
       newNodeLabel: '',
-      nodeCategory:[
+      nodeCategory: [
         'rule',
         'action',
         'script',
         'decision',
         'fork',
-        'join',
-      ],
+        'join'
+      ]
     }
   },
   methods: {
@@ -81,7 +83,7 @@ export default {
       console.log('canvas Click, event:', e)
     },
     addNode() {
-      let maxID = Math.max(0, ...this.scene.nodes.map((link) => {
+      const maxID = Math.max(0, ...this.scene.nodes.map((link) => {
         return link.id
       }))
       this.scene.nodes.push({
@@ -89,20 +91,20 @@ export default {
         x: -400,
         y: 50,
         type: this.nodeCategory[this.newNodeType],
-        label: this.newNodeLabel ? this.newNodeLabel: `test${maxID + 1}`,
+        label: this.newNodeLabel ? this.newNodeLabel : `test${maxID + 1}`
       })
     },
     nodeClick(id) {
-      console.log('node click', id);
+      console.log('node click', id)
     },
     nodeDelete(id) {
-      console.log('node delete', id);
+      console.log('node delete', id)
     },
     linkBreak(id) {
-      console.log('link break', id);
+      console.log('link break', id)
     },
     linkAdded(link) {
-      console.log('new link added:', link);
+      console.log('new link added:', link)
     }
   }
 }
