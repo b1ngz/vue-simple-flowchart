@@ -6,6 +6,7 @@
     @mousedown="handleMousedown"
     @mouseover="handleMouseOver"
     @mouseleave="handleMouseLeave"
+    @click="onClick"
   >
     <div
       class="node-port node-input"
@@ -72,7 +73,9 @@ export default {
     return {
       show: {
         delete: false
-      }
+      },
+      delay: 700,
+      clicks: 0
     }
   },
   computed: {
@@ -102,15 +105,30 @@ export default {
       this.show.delete = false
     },
     outputMouseDown(e) {
-      this.$emit('linkingStart')
+      const rect = e.target.getBoundingClientRect()
+      this.$emit('linkingStart', this.id, rect)
       e.preventDefault()
     },
     inputMouseDown(e) {
       e.preventDefault()
     },
     inputMouseUp(e) {
-      this.$emit('linkingStop')
+      const rect = e.target.getBoundingClientRect()
+      this.$emit('linkingStop', this.id, rect)
       e.preventDefault()
+    },
+    onClick: function(event) {
+      this.clicks++
+      if (this.clicks === 1) {
+        const self = this
+        this.timer = setTimeout(function() {
+          self.clicks = 0
+        }, this.delay)
+      } else {
+        clearTimeout(this.timer)
+        this.$emit('nodeEdit')
+        this.clicks = 0
+      }
     }
   }
 }
@@ -123,8 +141,6 @@ $portSize: 12;
 
 .flowchart-node {
   margin: 0;
-  width: 80px;
-  height: 80px;
   position: absolute;
   box-sizing: border-box;
   border: none;
@@ -142,6 +158,7 @@ $portSize: 12;
       padding: 6px;
     }
     .node-label {
+      padding: 6px;
       font-size: 13px;
     }
   }
