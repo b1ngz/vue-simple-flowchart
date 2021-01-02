@@ -1,3 +1,7 @@
+# Some Updated
+- Remove node fixed width and height css, and calculate the link start and end position dynamically
+- Add node double click event for edit action and one click event for drag node.
+
 # vue-simple-flowchart
 
 ## Introduction
