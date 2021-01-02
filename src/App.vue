@@ -13,6 +13,7 @@
       :scene.sync="scene"
       :height="800"
       @nodeClick="nodeClick"
+      @nodeEdit="nodeEdit"
       @nodeDelete="nodeDelete"
       @linkBreak="linkBreak"
       @linkAdded="linkAdded"
@@ -96,6 +97,9 @@ export default {
     },
     nodeClick(id) {
       console.log('node click', id)
+    },
+    nodeEdit(id) {
+      console.log('node edit', id)
     },
     nodeDelete(id) {
       console.log('node delete', id)
